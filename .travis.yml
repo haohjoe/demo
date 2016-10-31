@@ -1,0 +1,125 @@
+# see http://about.travis-ci.org/docs/user/languages/php/ for more hints
+language: php
+
+# list any PHP version you want to test against
+php:
+  # using major version aliases
+
+  # aliased to a recent 5.3.x version
+  - 5.3
+  # aliased to a recent 5.4.x version
+  #- 5.4
+
+# mysql is started automatically
+services:
+  - mongodb
+  - redis-server
+  - memcached
+  - rabbitmq
+
+## optionally specify a list of environments, for example to test different RDBMS
+#env:
+#   - DB=mongo
+#   #- DB=mysql
+
+# now, all services will be started and env will be set
+## execute any number of scripts before the test run, custom env's are available as variables
+# Clone project repository from GitHub
+# cd to clone directory
+# Checkout commit for this build
+# and than go to steps
+# step 1
+before_install:
+   - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+   - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+   - echo "extension = memcache.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+   - echo "extension = apc.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+   - pecl install igbinary
+   - pecl install -f mongo-1.4.5
+   - export SERVICE_NAME="cc"
+   - export INIT_DIR=$PWD
+   - export BASE_DIR=`dirname $INIT_DIR`
+   - export BASE_NAME=`basename $BASE_DIR`
+   - export TEST_DIR=$INIT_DIR/protected/tests/
+   - export LIB_DIR=$BASE_DIR/lib
+   - export RUNTIME_PATH=$BASE_DIR/runtime/$SERVICE_NAME
+   - export MONGODB_DIR=$BASE_DIR/mongodb
+   - export REDIS_DIR=$BASE_DIR/redis
+   - echo 'LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBN2RhWm9CWDFocTQyTWtiY2tjWWNGNWRZeHMxVmorYkQ3KzYvTExOb05sVHk4YmdxClk3ZDNCL0F5MkJ2NUxxcHFuZlNOcmM0RHNMc2xEZEd3b1pxbHhjcHZPaEhGSDRZbE5ZOWNlZng0MTJEMlhRUnYKQVlZTjlwZ2d0b3N2L29udHZ6M1hWTVdWSjhZZ1lRb1dRTlN0ZjhMRnZnYk5uNVJCeVNJOGtyZ0Q5ek16S2pRQQpFZWxPUlN0QTZoMW5zQ0xSUTJxcmZ5Z2dYblkwOVNBMEhaM0p4RWJyaUZpeWJRZmVsVmhDSFAxUUczVkVqekxQCmhwL1gwMnUzQmZmM21YZFdqbXBNYURwaHV4Y0gzejNuVWppemhteEt3Q29QY1prcnFuOHp4WCtaNDg5QWpOTFcKSmh6Q2M2UFJINTBjcldzZDMyd3d4cGJHVzd0c1oxaFl4L3AxdHdJQkl3S0NBUUVBdDNtcHRnSlBzUW9NalM5Wgpza2hlMEY3UGRNcEpVY0NseDdndEU5cmJYUnoxN2F0VDVvWTNRS05hYkRMV0sxQkRubXd5eCtnUmViVHdzdU9XCjR4RG1TQi9TSlh0c0xrTHBnUmJTVDNtZkRJeWd5Mm5SK2R4eEsvR3kxZlpZT1dNV2ZaWWJKQ05rYnlQUDFkU1UKMHUwMVlvN3dVTU5yYkhtdkY0RFBwR0lSc0JBUkpHQklVR3hLejZVblpLaXp1a1Q0KzMvMWtiUjhzV1FBYzh4YwptOXlxdEljYStvQ0J4TFhQaTlRc0ZqWEVIdDJacmx5bkk5dkZOLzdQVTIzdnU5dVhWL3E2OEVZUzBEdVhJbHhwCkJxUHJKeUZPTU9kRVhaTFc3SWdsd1ZvWE5rSHZRY21iT21jL2pQeFpCVjRnOW5aTlUydEl1clBibmxFSjJiVW0KTTJSbk13S0JnUUQ1bEI4K0poS0dSaWh4eEVtOXNwTWxHZDJhN3lPcE5qQ3pQM0U4NGh4NlJLR2xxMk5Va1FwTApFQXdTaWpGWTYySlVwMGg0UU95dHhKVDZBenp1b25sMCttMU9kMjFlUEJVejhVRW16OGtQQ1JSN3cvWEp5YnlBCnA0endEdkM3WnRpeHRBalErZXRQYXl0Q0NML2I4UXBuNkVQYkdMK1ppdDY4aE91c21OdDJaUUtCZ1FEejlTWXIKU3JLeTN1RGVjKzkrbzgzM29TbVAzSjg5MElyOFlmSG5ldkY3c2hLVXF6SlcwNE9zWjczamRnR0hMZjBvc0k2dQpCRUR4ZytIRE44UTZmcnRNekp1RzMwTEZMclNVd1hIL2VkUUxYWlR1WGY3Ly95Zk5TNWNjUUtoT251endaeENICnpZV3UzKzhTTmRVREN4eXdpd1dQR3FJc2tkdnU5NTVMUWRXNzZ3S0JnUUNySTcybTlZa0xuZEtYSjRNRnZFZWsKYVlJRDF5NWxadnpTcnlrVHpqOXB5S2xicUxra0M2OUphaGJvSkQ4WVp1UlhUaU1Rb1l4WjVlSi9qVEVZcWV6aQpmOVhzcWFvVXUzeEEzL0lwUGdZMk1oeXNvNkU1Nld0UTUrdWRUQkxKcFp2bmtXVWhsVzRuMUhWdkcvRkdYQ1JrCmdnS2szY1UyRmhVVGpsaDJXakFXcXdLQmdGT2tnaDE0c2t2MHBONk9Kam9NUnA0TFhyVDdMMGhrd2ZBaGxNUmsKcXBEUFZ0UGk3TEFPQVVKc3RpSVoxS05nT1lwTEtacS9vVHpjd203UlNwZTJiQnBVeDV2MHhtOTl1a0doYU9uZwpvSGpzNHByZVpnNmduKzZka3VVZGU0aXJoRyt1VHM5NXFpMVVGM1AxTXhiOGZ0MXhmait4WEN5Sng3K2xXdGY1ClVKZ3pBb0dCQUpNaTRubThvYjVVOGJNZGJ2dTZoc3hSdFV6aXBjajBNekdRTEFrWUp1bWEzRXM3ZmZ6dnU5cjAKTGVQUEpScUdGZmoreXJHSStmZmR5aGVuZVVzRW81MThVNUpXRlZZODNtMmZpNTZrS01Dck1EWEd0V3lTREdsSQpkOEMwVjFPMjR3NmdxV0tCVG01eUlKbmEyQW1CM0JldWgzcG1YUUIxUnVyTWJZaWtraGhJCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==' | base64 --decode > ~/.ssh/id_rsa
+   - chmod 600 ~/.ssh/id_rsa
+   - eval `ssh-agent` > /dev/null 2>&1
+   - ssh-add ~/.ssh/id_rsa > /dev/null 2>&1
+   - echo -e "Host github.com\nBatchMode yes\nStrictHostKeyChecking no\n" >> ~/.ssh/config
+   - export GIT_ASKPASS=echo
+
+# step 2
+install:
+   #- ls -l /home/travis/
+   - git clone --branch=master git@github.com:PGWireless/phplib.git $LIB_DIR
+   #- ls -l
+   #- tail -n 300 /home/travis/build.sh
+   - pear channel-discover pear.phpunit.de
+   - pear remote-list -c phpunit
+   - pear install phpunit/PHPUnit-3.7.28
+   - pear install phpunit/PHPUnit_Selenium-1.3.3
+   - pear install phpunit/PHP_Invoker-1.1.3
+   - pear install phpunit/DbUnit-1.3.0
+   - pear install phpunit/PHPUnit_Story-1.0.2
+   #- pear install phpunit/Diff-1.1.0
+   - phpenv rehash
+# step 3
+before_script:
+   #- phpenv config-add protected/tests/fortravis_php.ini
+   - phpunit --version
+   - mkdir -p $RUNTIME_PATH
+   - memcached -m 1024 -p 11212 -d
+   #- mongod --port 8888 --dbpath $MONGODB_DIR &
+   #- sleep 3
+   #- redis-server --port 9999 &
+   #- sleep 1
+   - pstree
+   #- mysql -utravis -e "source $TEST_DIR/data/mysql.sql;"
+   #- mysql -utravis -e "show databases;"
+#  - if [[ "$DB" == "pgsql" ]]; then psql -c "DROP DATABASE IF EXISTS hello_world_test;" -U postgres; fi
+#  - if [[ "$DB" == "pgsql" ]]; then psql -c "create database hello_world_test;" -U postgres; fi
+#  - if [[ "$DB" == "mysql" ]]; then mysql -e "create database IF NOT EXISTS hello_world_test;" -uroot; fi
+
+## omitting "script:" will default to phpunit
+## use the $DB env variable to determine the phpunit.xml to use
+#script: phpunit --configuration phpunit_$DB.xml --coverage-text
+# step 4
+script: 
+  - cd $TEST_DIR
+  #- export APPLICATION_ENV="testing"
+  - sh test_travis.sh
+  #- sh test_user.sh
+  #- phpunit --coverage-text -c tests/phpunit.xml --testsuite feed
+  #- phpunit -c tests/phpunit.xml
+  - cd $INIT_DIR
+
+# step 5
+finish:
+  - echo "finish"
+
+# step 6 on success
+after_success:
+  - echo "after_success"
+  # run cmd 'git pull origin master' on cloud-cc1 server
+  - curl "http://cctest.camera360.com/at/index.php?m=cc&n=$BASE_NAME"
+
+# step 6 on failure
+after_failure:
+  - echo "after_failure"
+
+# step 7
+after_script:
+  - echo "after_script"
+  - pstree
+  - pwd
+  - cat /home/travis/state.log
+  #- cat ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  #- ls -l
+## configure notifications (email, IRC, campfire etc)
+#notifications:
+#  irc: "irc.freenode.org#travis"
